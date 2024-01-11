@@ -6,7 +6,7 @@
 
 Name:           pytz
 Version:        2019.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        World Timezone Definitions for Python
 
 License:        MIT
@@ -16,6 +16,13 @@ Source0:        %pypi_source
 Patch0:         pytz-zoneinfo.patch
 # https://bugzilla.redhat.com/1497572
 Patch1:         remove_tzinfo_test.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=2217853
+# Upstream: https://github.com/stub42/pytz/commit/07aa4d962dae5cb7ced4f61fe85a9001a01676df
+# Upstream changed the way it includes the tzdata which is something
+# we cannot replicate downstream because we use the databse provided
+# by tzdata component instead of the bundled one so the patch
+# makes the tests pass with the latest version of tzdata.
+Patch2:         fix_ftbfs_with_newer_tzdata.patch
 
 BuildArch:      noarch
 # Exclude i686 arch. Due to a modularity issue it's being added to the
@@ -113,6 +120,10 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} %{__python3} -m pytest -v
 
 
 %changelog
+* Tue Jun 27 2023 Lumír Balhar <lbalhar@redhat.com> - 2019.3-4
+- Fix FTBFS with newest tzdata
+Resolves: rhbz#2217853
+
 * Fri Dec 13 2019 Tomas Orsava <torsava@redhat.com> - 2019.3-3
 - Exclude unsupported i686 arch
 
