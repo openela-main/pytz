@@ -12,7 +12,7 @@
 
 Name:           pytz
 Version:        2021.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        World Timezone Definitions for Python
 
 License:        MIT
@@ -22,6 +22,14 @@ Source0:        %pypi_source
 Patch0:         pytz-zoneinfo.patch
 # https://bugzilla.redhat.com/1497572
 Patch1:         remove_tzinfo_test.patch
+# https://bugzilla.redhat.com/2216116
+# https://issues.redhat.com/browse/RHEL-676
+# Upstream: https://github.com/stub42/pytz/commit/07aa4d962dae5cb7ced4f61fe85a9001a01676df
+# Upstream changed the way it includes the tzdata which is something
+# we cannot replicate downstream because we use the databse provided
+# by tzdata component instead of the bundled one so the patch
+# makes the tests pass with the latest version of tzdata.
+Patch2:         fix_ftbfs_with_newer_tzdata.patch
 
 BuildArch:      noarch
 
@@ -107,6 +115,10 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} %{__python3} -m pytest -v
 
 
 %changelog
+* Tue Jun 27 2023 Lumír Balhar <lbalhar@redhat.com> - 2021.1-5
+- Fix FTBFS with newest tzdata
+Resolves: RHEL-676
+
 * Tue Aug 10 2021 Mohan Boddu <mboddu@redhat.com> - 2021.1-4
 - Rebuilt for IMA sigs, glibc 2.34, aarch64 flags
   Related: rhbz#1991688
